@@ -55,7 +55,7 @@ export async function handleLogin(formData: FormData): Promise<ActionResponse> {
       success: true,
       message: "Authenticated successfully.",
       user: {
-        _id: user._id.toString(), // <-- ADD THIS: Crucial for fetching the profile!
+        _id: user._id?.toString() || "temp_id", // <-- ADD THIS: Crucial for fetching the profile!
         email: user.email, // <-- ADD THIS: Crucial for contact details
         name: user.name,
         initials: initials || "US",
