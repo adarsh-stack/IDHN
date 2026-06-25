@@ -22,7 +22,7 @@ export async function fetchCentralBills(department: 'Pharmacy' | 'Appointment'):
     const { db } = await connectToDatabase();
     
     // FIX: Always sort by descending order (-1) so the latest bill is at the top
-    const sortPattern = { createdAt: -1 }; 
+    const sortPattern = { createdAt: -1 as const };
     
     const bills = await db.collection('bills').find({ department }).sort(sortPattern).toArray();
 
