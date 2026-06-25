@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import NotificationBell from "./Notify";
+// import NotificationBell from "./Notify";
 import UserMenu from "./UserMenu";
 import { useRef } from "react"; // Ensure useRef is added
 import DoctorsPopUp from "./DoctorsPopUp";
