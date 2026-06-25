@@ -1,30 +1,33 @@
 "use client";
 
+import { AppRole } from "../lib/rbac";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { handleLogin } from "../actions";
 import Link from "next/link";
+
 export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setError(null);
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     setLoading(true);
+    setError(null);
+    
+    const formData = new FormData(e.currentTarget);
+    const res = await handleLogin(formData);
 
-    const formData = new FormData(event.currentTarget);
-    const result = await handleLogin(formData);
+    if (res.success && res.user) {
+      // 1. Save Session to localStorage (This defines the role for the rest of your app)
+      localStorage.setItem("idhn_session", JSON.stringify(res.user));
 
-    setLoading(false);
-
-    if (result.success && result.user) {
-      // Store the user session details in localStorage
-      localStorage.setItem("idhn_session", JSON.stringify(result.user));
-
-      // PATCH: Change redirection from '/home' to absolute root '/'
-      window.location.href = "/";
+      // 2. Route EVERYONE directly to the main dashboard
+      router.push("/");
     } else {
-      setError(result.message);
+      setError(res.message);
+      setLoading(false);
     }
   };
 

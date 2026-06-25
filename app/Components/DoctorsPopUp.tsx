@@ -1,51 +1,135 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { GroupedDoctors } from '@/app/actions';
+import React, { useEffect, useState } from "react";
+import { fetchAllStaff } from "@/app/actions/profileActions"; // Using the backend action we built earlier
 
-interface DoctorsPopupProps {
-  data: GroupedDoctors[];
-  onClose: () => void;
+interface StaffDirectoryPopupProps {
+  isOpen: boolean;
 }
 
-export default function DoctorsPopup({ data, onClose }: DoctorsPopupProps) {
+export default function DoctorsPopUp({ isOpen }: StaffDirectoryPopupProps) {
+  const [loading, setLoading] = useState(true);
+  const [directory, setDirectory] = useState({
+    doctors: [] as any[],
+    receptionists: [] as any[],
+    pharmacists: [] as any[],
+  });
+
+  useEffect(() => {
+    async function loadDirectory() {
+      if (!isOpen) return; // Only fetch when the dropdown is opened
+      
+      setLoading(true);
+      const res = await fetchAllStaff();
+      
+      if (res.success && res.data) {
+        // Group the staff by their roles
+        setDirectory({
+          doctors: res.data.filter((s: any) => s.role === "Doctor"),
+          receptionists: res.data.filter((s: any) => s.role === "Receptionist"),
+          pharmacists: res.data.filter((s: any) => s.role === "Pharmacy"),
+        });
+      }
+      setLoading(false);
+    }
+
+    loadDirectory();
+  }, [isOpen]);
+
+  if (!isOpen) return null;
+
   return (
-    <div className="absolute right-0 md:right-auto md:left-0 top-12 w-80 sm:w-96 bg-[#1a1a1a] border border-[#333] rounded-2xl shadow-2xl p-5 z-[3000] text-white">
-      {/* Top Header Label */}
-      <div className="flex justify-between items-center border-b border-zinc-850 pb-2.5 mb-4">
-        <h3 className="text-xs font-bold uppercase tracking-wider text-teal-400 font-mono">Practitioner Directory</h3>
-        <button onClick={onClose} className="text-gray-500 hover:text-gray-300 text-sm cursor-pointer">✕</button>
+    // The main dark dropdown container
+    <div className="absolute top-full left-0 mt-3 w-72 bg-[#161b22] border border-gray-800 rounded-2xl shadow-2xl z-[6000] overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200">
+      
+      {/* Fixed Header */}
+      <div className="p-4 border-b border-gray-800 bg-[#161b22] relative z-10">
+        <h3 className="text-[#00d8b6] text-[11px] font-bold tracking-[0.2em] uppercase">
+          Practitioner Directory
+        </h3>
       </div>
 
-      {data.length === 0 ? (
-        <p className="text-xs text-gray-500 text-center py-4">No active practitioners on this cluster node.</p>
-      ) : (
-        /* Scrollable layout wrapper */
-        <div className="max-h-72 overflow-y-auto space-y-4 pr-1 scrollbar-thin">
-          {data.map((group) => (
-            <div key={group._id} className="space-y-1.5">
-              {/* Department Group Label Header */}
-              <h4 className="text-[11px] font-bold text-teal-500/80 uppercase tracking-wide bg-teal-950/20 px-2 py-0.5 rounded border border-teal-950/30">
-                {group._id}
-              </h4>
-              
-              {/* Nested Doctor Names Roster */}
-              <ul className="space-y-1 pl-2">
-                {group.doctors.map((doc) => (
-                  <li key={doc.id} className="group flex flex-col py-1 border-b border-zinc-900/40 last:border-0">
-                    <span className="text-xs font-semibold text-gray-200 group-hover:text-teal-400 transition-colors">
-                      {doc.name}
-                    </span>
-                    <span className="text-[10px] text-gray-500 font-mono select-all">
-                      {doc.email}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-      )}
+      {/* Scrolling Content Area - max-h-60 ensures it shows ~3 items then scrolls */}
+      <div className="max-h-60 overflow-y-auto p-4 custom-scrollbar bg-[#161b22]">
+        
+        {loading ? (
+          <div className="text-gray-500 text-xs text-center py-4 animate-pulse">
+            Syncing database...
+          </div>
+        ) : (
+          <div className="space-y-6">
+            
+            {/* 1. DOCTORS SECTION */}
+            {directory.doctors.length > 0 && (
+              <div>
+                <h4 className="text-[#0f6266] text-[10px] font-bold tracking-widest uppercase mb-3 border-b border-gray-800/50 pb-1">
+                  Physicians & Specialists
+                </h4>
+                <div className="space-y-3">
+                  {directory.doctors.map((doc) => (
+                    <div key={doc._id} className="group cursor-pointer hover:bg-gray-800/40 p-1.5 -mx-1.5 rounded-lg transition-colors">
+                      <p className="text-white text-sm font-bold group-hover:text-[#00d8b6] transition-colors">
+                        {doc.name}
+                      </p>
+                      <p className="text-gray-500 text-[10px] font-mono mt-0.5">
+                        {doc.email || "No email provided"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 2. RECEPTIONISTS SECTION */}
+            {directory.receptionists.length > 0 && (
+              <div>
+                <h4 className="text-[#0f6266] text-[10px] font-bold tracking-widest uppercase mb-3 border-b border-gray-800/50 pb-1">
+                  Front Desk / Reception
+                </h4>
+                <div className="space-y-3">
+                  {directory.receptionists.map((rec) => (
+                    <div key={rec._id} className="group cursor-pointer hover:bg-gray-800/40 p-1.5 -mx-1.5 rounded-lg transition-colors">
+                      <p className="text-white text-sm font-bold group-hover:text-[#00d8b6] transition-colors">
+                        {rec.name}
+                      </p>
+                      <p className="text-gray-500 text-[10px] font-mono mt-0.5">
+                        {rec.location || "General Reception"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* 3. PHARMACISTS SECTION */}
+            {directory.pharmacists.length > 0 && (
+              <div>
+                <h4 className="text-[#0f6266] text-[10px] font-bold tracking-widest uppercase mb-3 border-b border-gray-800/50 pb-1">
+                  Central Dispensary
+                </h4>
+                <div className="space-y-3">
+                  {directory.pharmacists.map((pharm) => (
+                    <div key={pharm._id} className="group cursor-pointer hover:bg-gray-800/40 p-1.5 -mx-1.5 rounded-lg transition-colors">
+                      <p className="text-white text-sm font-bold group-hover:text-[#00d8b6] transition-colors">
+                        {pharm.name}
+                      </p>
+                      <p className="text-gray-500 text-[10px] font-mono mt-0.5">
+                        {pharm.email || "Pharmacist"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Empty State Fallback */}
+            {directory.doctors.length === 0 && directory.receptionists.length === 0 && directory.pharmacists.length === 0 && (
+               <p className="text-gray-500 text-xs italic">No staff found in database.</p>
+            )}
+
+          </div>
+        )}
+      </div>
     </div>
   );
 }

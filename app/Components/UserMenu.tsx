@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-
+import Link from "next/link";
 // Define the interface to type the live incoming data from your Header component
 interface UserSession {
   name: string;
@@ -47,26 +47,14 @@ export default function UserMenu({
       {/* Dropdown Menu Container */}
       {isOpen && (
         <div style={styles.dropdown}>
-          <button
-            style={styles.menuItem}
-            onClick={() => console.log("Navigate to settings")}
+          <Link
+            href="/profile"
+            className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
           >
             Profile Settings
-          </button>
-          <button
-            style={styles.menuItem}
-            onClick={() => console.log("Navigate to change password")}
-          >
-            Change Password
-          </button>
-          <button
-            style={styles.menuItem}
-            onClick={() => console.log("Open local audit logs")}
-          >
-            Audit Log
-          </button>
+          </Link>
+          
           <hr style={styles.divider} />
-
           {/* Triggers the header's synchronized localStorage purge cycle */}
           <button
             style={{ ...styles.menuItem, ...styles.signOut }}

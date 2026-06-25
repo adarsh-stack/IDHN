@@ -5,7 +5,7 @@ import Link from "next/link";
 import NotificationBell from "./Notify";
 import UserMenu from "./UserMenu";
 import { useRef } from "react"; // Ensure useRef is added
-import DoctorsPopup from "./DoctorsPopUp";
+import DoctorsPopUp from "./DoctorsPopUp";
 import { fetchDoctorsGroupedByExpertise, GroupedDoctors } from "@/app/actions";
 
 interface UserSession {
@@ -20,7 +20,7 @@ const Header = () => {
   const [isDocOpen, setIsDocOpen] = useState<boolean>(false);
   const [groupedDocs, setGroupedDocs] = useState<GroupedDoctors[]>([]);
   const docDropdownRef = useRef<HTMLDivElement>(null);
-
+  const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
   // Trigger fetch sequence when dropdown opens
   useEffect(() => {
     if (isDocOpen) {
@@ -113,24 +113,21 @@ const Header = () => {
                 </li> */}
 
                 {/* PATCH: Absolute container housing the dropdown state action */}
-                <li ref={docDropdownRef} className="relative">
-                  <button
-                    onClick={() => setIsDocOpen(!isDocOpen)}
-                    className={`hover:text-white transition-colors font-medium cursor-pointer focus:outline-none ${
-                      isDocOpen ? "text-teal-400" : ""
-                    }`}
-                  >
-                    Doctors {isDocOpen ? "▲" : "▼"}
-                  </button>
+                <div className="flex items-center gap-4 bg-[#161b22] p-4 text-white">
+                  {/* 2. CRITICAL: THIS DIV MUST HAVE 'relative' */}
+                  <div className="relative">
+                    {/* The Button */}
+                    <button
+                      onClick={() => setIsDirectoryOpen(!isDirectoryOpen)}
+                      className="flex items-center gap-2 text-[#00d8b6] font-bold text-sm cursor-pointer hover:text-white transition-colors"
+                    >
+                      Doctors {isDirectoryOpen ? "▲" : "▼"}
+                    </button>
 
-                  {/* Renders the aggregated overlay panel */}
-                  {isDocOpen && (
-                    <DoctorsPopup
-                      data={groupedDocs}
-                      onClose={() => setIsDocOpen(false)}
-                    />
-                  )}
-                </li>
+                    {/* 3. The Popup is placed directly inside the relative div! */}
+                    <DoctorsPopUp isOpen={isDirectoryOpen} />
+                  </div>
+                </div>
               </ul>
             </nav>
 
@@ -140,7 +137,7 @@ const Header = () => {
             </div>
 
             <div style={styles.actions}>
-              <NotificationBell />
+              
               <UserMenu user={session} onLogout={handleLogout} />
             </div>
           </div>

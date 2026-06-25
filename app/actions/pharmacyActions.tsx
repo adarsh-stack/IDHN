@@ -83,30 +83,59 @@ export async function adjustStockCount(medicineId: string, newQuantity: number):
  * 4. DISPENSE MEDICINES AND AUTO-UPDATE STOCK COUNTERS VIA ATOMIC OPERATORS
  * Uses $inc with negative numbers to atomically subtract stock and avoid race conditions.
  */
-export async function executeDispensation(patientId: string, items: Array<{ id: string; name: string; quantity: number; totalPrice: number }>, grandTotal: number): Promise<{ success: boolean; message: string }> {
+/**
+ * 4. DISPENSE MEDICINES AND AUTO-UPDATE STOCK COUNTERS VIA ATOMIC OPERATORS
+ * Now includes centralized billing, patient/billee mapping, and payment statuses.
+ */
+export async function executeDispensation(payload: {
+  patientId: string;
+  billeeName: string;
+  billeePhone: string;
+  items: Array<{ id: string; name: string; quantity: number; totalPrice: number }>;
+  grandTotal: number;
+  paymentStatus: 'paid' | 'unpaid';
+  paymentMethod: string;
+}): Promise<{ success: boolean; message: string; billId?: string }> {
   try {
     const { db } = await connectToDatabase();
 
-    // Loop through and deduct stock counts atomically
-    for (const item of items) {
+    // 1. Loop through and deduct stock counts atomically
+    for (const item of payload.items) {
       await db.collection('pharmacy_inventory').updateOne(
         { _id: new ObjectId(item.id) },
-        { $inc: { stockCount: -Math.abs(item.quantity) } } // Safe subversion drop
+        { $inc: { stockCount: -Math.abs(item.quantity) } } 
       );
     }
 
-    // Record invoice ticket into centralized hospital accounting stream
+    // 2. Record invoice ticket into centralized hospital accounting stream
     const billResult = await db.collection('bills').insertOne({
-      patientId,
-      type: 'Pharmacy',
-      amount: grandTotal,
-      status: 'unpaid',
-      items: items.map(i => ({ description: i.name, qty: i.quantity, total: i.totalPrice })),
+      patientId: payload.patientId || 'WALK-IN',
+      billeeName: payload.billeeName,
+      billeePhone: payload.billeePhone,
+      department: 'Pharmacy',
+      amount: payload.grandTotal,
+      status: payload.paymentStatus, // 'unpaid' routes to Doctor/Patient dues; 'paid' clears it
+      paymentMethod: payload.paymentMethod,
+      items: payload.items.map(i => ({ description: i.name, qty: i.quantity, total: i.totalPrice })),
       createdAt: new Date(),
       updatedAt: new Date()
     });
 
-    return { success: true, message: `Dispensation processed. Invoice #${billResult.insertedId.toString().substring(18)} generated.` };
+    const generatedBillId = billResult.insertedId.toString();
+
+    // 3. Log to audit trails
+    await db.collection('audit_logs').insertOne({
+      action: 'PHARMACY_DISPENSATION_BILLED',
+      billId: generatedBillId,
+      amount: payload.grandTotal,
+      timestamp: new Date()
+    });
+
+    return { 
+      success: true, 
+      message: `Dispensation processed. Invoice #${generatedBillId.substring(18)} generated.`,
+      billId: generatedBillId
+    };
   } catch (error) {
     console.error('Dispensation pipeline failed:', error);
     return { success: false, message: 'Transactional dispatch failure.' };

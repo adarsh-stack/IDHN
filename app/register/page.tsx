@@ -59,10 +59,10 @@ export default function RegisterPage() {
           <label className="block text-gray-300 text-xs font-medium mb-1.5">System Access Role</label>
           <select name="role" className="w-full px-4 py-2.5 rounded-lg border border-[#444] bg-[#262626] text-white text-sm cursor-pointer">
             <option value="Doctor">Doctor / Practitioner</option>
-            <option value="Nurse">Nursing Staff</option>
-            <option value="Pharmacist">Pharmacist</option>
-            <option value="Lab Technician">Lab Technician</option>
-            <option value="Admin">Hospital Administrator</option>
+            <option value="Receptionist">Receptionist</option>
+            <option value="Pharmacy">Pharmacy</option>
+            {/* <option value="Lab Technician">Lab Technician</option>
+            <option value="Admin">Hospital Administrator</option> */}
           </select>
         </div>
 
