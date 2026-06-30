@@ -55,7 +55,24 @@ export interface MedicalEncounter {
 
   requestedLabs?: string[];
 }
+export async function removePrescriptionAction(patientId: string, prescriptionId: string) {
+  try {
+    const { db } = await connectToDatabase();
+    
+    // This looks inside the patient document and pulls (removes) the specific prescription from the array
+    const result = await db.collection('patients').updateOne(
+      { _id: new ObjectId(patientId) },
+      { $pull: { prescriptions: { id: prescriptionId } } as any } // "as any" bypasses strict TypeScript here
+    );
 
+    if (result.modifiedCount > 0) {
+      return { success: true, message: "Prescription removed." };
+    }
+    return { success: false, message: "Prescription not found in database." };
+  } catch (error) {
+    return { success: false, message: "Server error removing prescription." };
+  }
+}
 export async function linkPatientAadhaar(
   patientId: string,
   aadhaarId: string,

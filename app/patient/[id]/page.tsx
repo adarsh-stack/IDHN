@@ -15,7 +15,7 @@ import {
 import { completePatientCheckup } from "@/app/actions/queueActions";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-
+// import { removePrescriptionAction } from "@/app/actions";
 // 1. IMPORT YOUR SECURITY WRAPPER
 // import ProtectedRoute from "@/app/Components/ProtectedRoute";
 
@@ -137,7 +137,31 @@ export default function ClinicalWorkspacePage() {
     setIsSaving(false);
     alert("✓ Draft successfully saved and synchronized.");
   };
+  // --- ADD THIS HANDLER ---
+  const handleRemovePrescription = async (prescriptionId: string) => {
+    // 1. Double-check with the user to prevent accidental clicks
+    if (!window.confirm("Are you sure you want to remove this prescription?")) return;
 
+    // 2. Optimistic UI Update: Instantly remove it from the screen so it feels blazing fast
+    // (Assuming you have a state variable like `patient` or `prescriptions`)
+    setPatient((prevPatient: any) => ({
+      ...prevPatient,
+      prescriptions: prevPatient.prescriptions.filter(
+        (rx: any) => rx.id !== prescriptionId && rx._id !== prescriptionId
+      ),
+    }));
+
+    try {
+      // 3. Call your backend server action to delete it permanently
+      // const res = await removePrescriptionAction(patient._id, prescriptionId);
+      // if (!res.success) {
+      //   alert("Failed to remove prescription from database: " + res.message);
+      //   // Optional: Re-fetch patient data here to revert the UI if the DB failed
+      // }
+    } catch (error) {
+      console.error("Error removing prescription:", error);
+    }
+  };
   const handleUpdatePastEncounter = async () => {
     if (!editingEncounter) return;
     setIsSaving(true);
