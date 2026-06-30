@@ -26,7 +26,7 @@ export async function fetchCentralBills(
     const bills = await db
       .collection("bills")
       .find({ department })
-      .sort(sortPattern)
+      .sort(sortPattern as any)
       .toArray();
 
     return {
