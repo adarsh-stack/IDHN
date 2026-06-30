@@ -7,6 +7,8 @@ interface ActionResponse {
   success: boolean;
   message: string;
   user?: {
+    _id: string;    
+    email: string;
     name: string;
     initials: string;
     role: string;
