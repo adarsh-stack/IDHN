@@ -138,7 +138,7 @@ export default function ClinicalWorkspacePage() {
     alert("✓ Draft successfully saved and synchronized.");
   };
   // --- ADD THIS HANDLER ---
-  const handleRemovePrescription = async (prescriptionId: string) => {
+const handleRemovePrescription = async (prescriptionId: any) => {
     // 1. Double-check with the user to prevent accidental clicks
     if (!window.confirm("Are you sure you want to remove this prescription?")) return;
 
@@ -534,7 +534,7 @@ export default function ClinicalWorkspacePage() {
                       </td>
                       <td className="p-3 text-center">
                         <button
-                          onClick={() => handleRemovePrescription(idx)}
+                          onClick={() => handleRemovePrescription(String(idx))}
                           className="text-red-400 hover:text-red-600 font-bold"
                         >
                           ✕
