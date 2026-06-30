@@ -55,15 +55,14 @@ export async function handleLogin(formData: FormData): Promise<ActionResponse> {
       success: true,
       message: "Authenticated successfully.",
       user: {
-        _id: user._id?.toString() || "temp_id", // <-- ADD THIS: Crucial for fetching the profile!
-        email: user.email, // <-- ADD THIS: Crucial for contact details
+        _id: user._id?.toString() || "temp_id", 
+        email: user.email, 
         name: user.name,
         initials: initials || "US",
         role: user.role || "Staff",
       },
     };
   } catch (error) {
-    // ... rest of the file
     console.error("Database Login System Exception:", error);
     return { success: false, message: "Local driver authentication failed." };
   }

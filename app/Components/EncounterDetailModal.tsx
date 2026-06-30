@@ -9,7 +9,6 @@ export default function EncounterDetailModal({
   encounter: any;
   onClose: () => void;
 }) {
-  // Safe fallbacks for missing data to prevent crashes on older records
   const vitals = encounter.vitals || {};
   const prescriptions = encounter.prescriptions || [];
   const labs = encounter.requestedLabs || [];

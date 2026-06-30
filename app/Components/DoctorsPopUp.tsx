@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { fetchAllStaff } from "@/app/actions/profileActions"; // Using the backend action we built earlier
+import { fetchAllStaff } from "@/app/actions/profileActions"; 
 
 interface StaffDirectoryPopupProps {
   isOpen: boolean;
@@ -17,13 +17,13 @@ export default function DoctorsPopUp({ isOpen }: StaffDirectoryPopupProps) {
 
   useEffect(() => {
     async function loadDirectory() {
-      if (!isOpen) return; // Only fetch when the dropdown is opened
+      if (!isOpen) return; 
       
       setLoading(true);
       const res = await fetchAllStaff();
       
       if (res.success && res.data) {
-        // Group the staff by their roles
+        
         setDirectory({
           doctors: res.data.filter((s: any) => s.role === "Doctor"),
           receptionists: res.data.filter((s: any) => s.role === "Receptionist"),
@@ -39,17 +39,17 @@ export default function DoctorsPopUp({ isOpen }: StaffDirectoryPopupProps) {
   if (!isOpen) return null;
 
   return (
-    // The main dark dropdown container
+    
     <div className="absolute top-full left-0 mt-3 w-72 bg-[#161b22] border border-gray-800 rounded-2xl shadow-2xl z-[6000] overflow-hidden animate-in slide-in-from-top-2 fade-in duration-200">
       
-      {/* Fixed Header */}
+     
       <div className="p-4 border-b border-gray-800 bg-[#161b22] relative z-10">
         <h3 className="text-[#00d8b6] text-[11px] font-bold tracking-[0.2em] uppercase">
           Practitioner Directory
         </h3>
       </div>
 
-      {/* Scrolling Content Area - max-h-60 ensures it shows ~3 items then scrolls */}
+      
       <div className="max-h-60 overflow-y-auto p-4 custom-scrollbar bg-[#161b22]">
         
         {loading ? (

@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { AppRole } from "../lib/rbac"; // Ensure this matches your RBAC types
-
-// Explicit type for navigation items
+import { AppRole } from "../lib/rbac"; 
 interface NavItem {
   id: string;
   label: string;
@@ -15,7 +13,6 @@ interface SidebarProps {
   setActiveTab: (id: string) => void;
 }
 
-// 1. Direct Mapping: Tab ID -> Allowed Roles
 const TAB_PERMISSIONS: Record<string, AppRole[]> = {
   dashboard: ["Doctor"],
   patients: ["Doctor", "Receptionist"],
@@ -56,7 +53,6 @@ export default function Sidebar({
     { id: "patients", label: "Patients", icon: "👥" },
   ];
 
-  // 2. Filter items strictly checking if the user's role exists in the tab's permission array
   const filteredNavItems = navItems.filter((item) => {
     const allowedRoles = TAB_PERMISSIONS[item.id] || [];
     return allowedRoles.includes(userRole);

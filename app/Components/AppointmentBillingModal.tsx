@@ -23,9 +23,8 @@ export default function AppointmentBillModal({
 
   const [doctors, setDoctors] = useState<DoctorSelectOption[]>([]);
   const [selectedDoc, setSelectedDoc] = useState<string>("");
-  const [baseFee, setBaseFee] = useState<number>(300); // Tracks the normal fee
+  const [baseFee, setBaseFee] = useState<number>(300);
 
-  // New Triage State
   const [triageStatus, setTriageStatus] = useState<
     "Normal" | "Emergency" | "Review"
   >("Normal");
@@ -34,7 +33,6 @@ export default function AppointmentBillModal({
   const [paymentMethod, setPaymentMethod] = useState("UPI");
   const [loading, setLoading] = useState(false);
 
-  // Dynamic Fee Calculation: Doubles if Emergency is selected
   const consultingFee = triageStatus === "Emergency" ? baseFee * 2 : baseFee;
 
   useEffect(() => {
@@ -80,7 +78,7 @@ export default function AppointmentBillModal({
       amount: consultingFee,
       paymentStatus,
       paymentMethod,
-      triageStatus, // Sent to backend
+      triageStatus,
     };
 
     const res = await createAppointmentBill(payload);
@@ -183,7 +181,6 @@ export default function AppointmentBillModal({
             )}
           </div>
 
-          {/* Row 1: Doctor & Triage Priority */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
@@ -229,7 +226,6 @@ export default function AppointmentBillModal({
             </div>
           </div>
 
-          {/* Row 2: Fees & Payment Status */}
           <div className="grid grid-cols-2 gap-4 pt-1">
             <div>
               <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
@@ -258,8 +254,6 @@ export default function AppointmentBillModal({
               </select>
             </div>
           </div>
-
-          {/* Row 3: Transaction Mode */}
           <div>
             <label className="block text-[10px] font-bold text-gray-400 uppercase mb-1">
               Mode of Transaction
@@ -275,8 +269,6 @@ export default function AppointmentBillModal({
               <option value="Card">Credit/Debit Card</option>
             </select>
           </div>
-
-          {/* Dynamic UPI Layout */}
           {paymentMethod === "UPI" &&
             paymentStatus === "paid" &&
             selectedPatient && (

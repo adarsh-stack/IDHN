@@ -4,8 +4,8 @@ import { connectToDatabase } from '../lib/db';
 
 export interface DashboardMetrics {
   todaysOpd: number;
-  opdWaiting: number;    // NEW
-  opdCompleted: number;  // NEW
+  opdWaiting: number;    
+  opdCompleted: number; 
   opdTrend: number;
   ipdOccupied: number;
   ipdTotal: number;
@@ -15,10 +15,7 @@ export interface DashboardMetrics {
   pendingBillsAmount: number;
 }
 
-/**
- * FETCH REAL-TIME AGGREGATE VALUES FOR DASHBOARD CARDS
- * Pulls directly from the unified billing and admissions ledgers for live accuracy.
- */
+
 export async function fetchDashboardMetrics(): Promise<{ success: boolean; data: DashboardMetrics | null }> {
   try {
     const { db } = await connectToDatabase();
@@ -72,11 +69,11 @@ export async function fetchDashboardMetrics(): Promise<{ success: boolean; data:
         todaysOpd: todaysOpd || 0,
         opdWaiting: opdWaiting || 0,
         opdCompleted: opdCompleted || 0,
-        opdTrend: 0, // Ready for historical mapping logic
+        opdTrend: 0, 
         ipdOccupied: ipdOccupied || 0,
         ipdTotal,
         revenueToday: revenueToday || 0,
-        revenueTrend: 0, // Ready for historical mapping logic
+        revenueTrend: 0, 
         pendingBillsCount: pendingBillsCount || 0,
         pendingBillsAmount: pendingBillsAmount || 0
       }

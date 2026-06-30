@@ -2,9 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-// import NotificationBell from "./Notify";
 import UserMenu from "./UserMenu";
-import { useRef } from "react"; // Ensure useRef is added
+import { useRef } from "react"; 
 import DoctorsPopUp from "./DoctorsPopUp";
 import { fetchDoctorsGroupedByExpertise, GroupedDoctors } from "@/app/actions";
 
@@ -21,7 +20,7 @@ const Header = () => {
   const [groupedDocs, setGroupedDocs] = useState<GroupedDoctors[]>([]);
   const docDropdownRef = useRef<HTMLDivElement>(null);
   const [isDirectoryOpen, setIsDirectoryOpen] = useState(false);
-  // Trigger fetch sequence when dropdown opens
+
   useEffect(() => {
     if (isDocOpen) {
       fetchDoctorsGroupedByExpertise().then((res) => {
@@ -30,7 +29,6 @@ const Header = () => {
     }
   }, [isDocOpen]);
 
-  // Close panel automatically if clicking anywhere outside the item
   useEffect(() => {
     function clickOutside(e: MouseEvent) {
       if (

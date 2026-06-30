@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-// Define the interface to type the live incoming data from your Header component
 interface UserSession {
   name: string;
   initials: string;
@@ -21,7 +20,6 @@ export default function UserMenu({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close the dropdown cleanly if a user clicks outside the menu boundaries
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -34,7 +32,6 @@ export default function UserMenu({
 
   return (
     <div style={styles.container} ref={menuRef}>
-      {/* User Info Trigger Button utilizing real values from your database */}
       <button onClick={() => setIsOpen(!isOpen)} style={styles.triggerButton}>
         <div style={styles.avatar}>{user.initials}</div>
         <div style={styles.textContainer}>
@@ -55,12 +52,11 @@ export default function UserMenu({
           </Link>
           
           <hr style={styles.divider} />
-          {/* Triggers the header's synchronized localStorage purge cycle */}
           <button
             style={{ ...styles.menuItem, ...styles.signOut }}
             onClick={() => {
               setIsOpen(false);
-              onLogout(); // This runs handleLogout from Header, clearing storage and executing window.location.href = '/login'
+              onLogout(); 
             }}
           >
             Sign Out
