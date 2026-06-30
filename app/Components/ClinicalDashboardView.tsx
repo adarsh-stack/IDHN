@@ -9,7 +9,7 @@ import PatientsPanel from "./sidebar/PatientPanel";
 import PharmacyPanel from "./sidebar/PharmacyPanel";
 import BillingPanel from "./sidebar/BillingPanel";
 
-export default function ClinicalDashboardView() {
+export default function ClinicalDashboardView({ user }: { user?: any }) {
   const router = useRouter();
 
   const [activeTab, setActiveTab] = useState<string>("");

@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-
 import ClinicalDashboardView from './Components/ClinicalDashboardView';
 import PublicLandingView from './Components/PublicLandingView';
 
+// Updated to match the strict type we created in authActions!
 interface UserSession {
+  _id: string;
+  email: string;
   name: string;
   initials: string;
   role: string;
@@ -16,22 +18,22 @@ export default function RootPage() {
   const [mounted, setMounted] = useState<boolean>(false);
 
   useEffect(() => {
-  try {
-    const storedSession = localStorage.getItem('idhn_session');
-    
-    // Check if the string exists and isn't undefined before parsing
-    if (storedSession && storedSession !== "undefined") {
-      setSession(JSON.parse(storedSession));
+    try {
+      const storedSession = localStorage.getItem('idhn_session');
+      
+      // Check if the string exists and isn't undefined before parsing
+      if (storedSession && storedSession !== "undefined") {
+        setSession(JSON.parse(storedSession));
+      }
+    } catch (error) {
+      console.error("Failed to safely read local device session tokens:", error);
+      // Clear corrupt storage tokens so the system doesn't freeze permanently
+      localStorage.removeItem('idhn_session'); 
+    } finally {
+      // PATCH: This MUST run no matter what, otherwise you stay stuck on the loading text!
+      setMounted(true); 
     }
-  } catch (error) {
-    console.error("Failed to safely read local device session tokens:", error);
-    // Clear corrupt storage tokens so the system doesn't freeze permanently
-    localStorage.removeItem('idhn_session'); 
-  } finally {
-    // PATCH: This MUST run no matter what, otherwise you stay stuck on the loading text!
-    setMounted(true); 
-  }
-}, []);
+  }, []);
 
   // Prevent background flashing while Next.js matches storage states
   if (!mounted) {
@@ -45,7 +47,7 @@ export default function RootPage() {
   // CONDITIONAL VIEW SWITCHING ENGINE
   return session ? (
     /* If logged in, mount the complete clinical workspace */
-    <ClinicalDashboardView user={session} />
+    <ClinicalDashboardView />
   ) : (
     /* If unauthenticated guest, render the standard landing details */
     <PublicLandingView />
